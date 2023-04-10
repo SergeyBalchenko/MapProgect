@@ -12,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -36,9 +37,7 @@ import java.util.Locale
 class MapsFragment : Fragment(R.layout.fragment_maps), GoogleMap.OnMarkerClickListener {
 
     private lateinit var binding: FragmentMapsBinding
-    private val viewModel: MapsViewModel by viewModels()
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private val permissionCode = 101
     private lateinit var currentLocation: Location
 
     private val featurePermissionRequestLauncher = registerForActivityResult(
@@ -59,37 +58,21 @@ class MapsFragment : Fragment(R.layout.fragment_maps), GoogleMap.OnMarkerClickLi
     private val callback = OnMapReadyCallback { googleMap ->
         binding.imgGps.setOnClickListener {
             featurePermissionRequestLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-            val getLocation = fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
-                if (location != null) {
-                    currentLocation = location
-                    val geocoder = Geocoder(requireContext(), Locale.getDefault())
-                    val addresses = geocoder.getFromLocation(
-                        currentLocation.latitude,
-                        currentLocation.longitude,
-                        1
-                    )
-                    val cityName = addresses?.get(0)?.locality
-                    val latLng = LatLng(currentLocation.latitude, currentLocation.longitude)
-                    val markerOptions =
-                        MarkerOptions().position(latLng).title(cityName).draggable(true)
+            val getLocation = fusedLocationProviderClient.lastLocation.addOnSuccessListener{
+                    location ->
+                    if (location != null){
+                        currentLocation = location
 
-                    googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
-                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13f))
-                    val marker = googleMap.addMarker(markerOptions)
-
-                    // Set a drag listener on the marker
-                    googleMap.setOnMarkerDragListener(this)
-
-                    // Set a click listener on the marker
-                    googleMap.setOnMarkerClickListener(this)
-
-
-                }
+                        val latLng = LatLng(currentLocation.latitude,currentLocation.longitude)
+                        var toast = Toast.makeText(requireActivity(),latLng.toString(),Toast.LENGTH_SHORT).show()
+                        val markerOptions = MarkerOptions().position(latLng).title(toast.toString()).draggable(true)
+                        googleMap?.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+                        googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,7f))
+                        googleMap?.addMarker(markerOptions)
+                    }
             }
         }
     }
-
-
     private fun onGotPermissionResultOnFeatures(granted: Boolean) {
         when (granted) {
             true -> Toast.makeText(
@@ -97,6 +80,7 @@ class MapsFragment : Fragment(R.layout.fragment_maps), GoogleMap.OnMarkerClickLi
                 R.string.location_permission_granted,
                 Toast.LENGTH_SHORT
             ).show()
+
             else -> Toast.makeText(
                 requireActivity(),
                 "Permission denied",
@@ -106,15 +90,11 @@ class MapsFragment : Fragment(R.layout.fragment_maps), GoogleMap.OnMarkerClickLi
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
-        // get the title of the clicked marker
-        val title = marker.title
-
-        // create the bundle with the new argument value
-        val bundle = bundleOf("city_name" to title)
-
-        // navigate to the detail fragment with the new argument
-        findNavController().navigate(R.id.action_mapsFragment_to_todayFragment, bundle)
-
+        val cityName = marker.tag as? String
+        cityName?.let {
+            val bundle = bundleOf("city_name" to it)
+            findNavController().navigate(R.id.action_mapsFragment_to_todayFragment, bundle)
+        }
         return true
     }
 }

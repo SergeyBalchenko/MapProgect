@@ -7,4 +7,5 @@
     <string name="open">open</string>
     <string name="permissions_denied_forever">permission denied forever</string>
     <string name="location_permission_granted">permission granted</string>
+    <string name="button">button</string>
 </resources>
