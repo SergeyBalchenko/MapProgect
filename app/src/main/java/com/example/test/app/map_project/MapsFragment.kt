@@ -58,31 +58,20 @@ class MapsFragment : Fragment(R.layout.fragment_maps), GoogleMap.OnMarkerClickLi
     private val callback = OnMapReadyCallback { googleMap ->
         binding.imgGps.setOnClickListener {
             featurePermissionRequestLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-            fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
-                if (location != null) {
+            val getLocation = fusedLocationProviderClient.lastLocation.addOnSuccessListener{
+                    location ->
+                if (location != null){
                     currentLocation = location
 
-                    val latLng = LatLng(currentLocation.latitude, currentLocation.longitude)
-                    val geocoder = Geocoder(requireContext(), Locale.getDefault())
-                    val addresses = geocoder.getFromLocation(
-                        currentLocation.latitude,
-                        currentLocation.longitude,
-                        1
-                    )
-
-                    val cityName = addresses?.firstOrNull()?.locality ?: "Unknown City"
-                    val markerOptions = MarkerOptions()
-                        .position(latLng)
-                        .title(cityName)
+                    val latLng = LatLng(currentLocation.latitude,currentLocation.longitude)
+                    var toast = Toast.makeText(requireActivity(),latLng.toString(),Toast.LENGTH_SHORT).show()
+                    val markerOptions = MarkerOptions().position(latLng).title(toast.toString()).draggable(true)
                     googleMap?.animateCamera(CameraUpdateFactory.newLatLng(latLng))
-                    googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7f))
-                    googleMap?.clear()
-                    googleMap?.addMarker(markerOptions)?.tag = cityName
+                    googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,7f))
+                    googleMap?.addMarker(markerOptions)
                 }
             }
         }
-
-        googleMap.setOnMarkerClickListener(this)
     }
     private fun onGotPermissionResultOnFeatures(granted: Boolean) {
         when (granted) {
