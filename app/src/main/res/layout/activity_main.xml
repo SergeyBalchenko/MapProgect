@@ -13,11 +13,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:defaultNavHost="true"
+        app:navGraph="@navigation/navigation_graph"
         app:layout_constraintBottom_toTopOf="@id/bottom_nav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:navGraph="@navigation/navigation_graph" />
+        tools:context="com.example.test.app.map_project.MapsFragment"
+        />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav"
@@ -28,9 +30,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_nav" />
-
-    <!--        android:background="@android:color/holo_orange_light"-->
-<!--        app:itemIconTint="@android:color/darker_gray"-->
-<!--        app:itemTextColor="@android:color/darker_gray"-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

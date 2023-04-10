@@ -34,59 +34,41 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import java.util.Locale
 
-class MapsFragment : Fragment(R.layout.fragment_maps), GoogleMap.OnMarkerClickListener {
+class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private lateinit var binding: FragmentMapsBinding
-    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var currentLocation: Location
+    private var googleMap: GoogleMap? = null
 
     private val featurePermissionRequestLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission(),
-        ::onGotPermissionResultOnFeatures
-    )
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // Permission granted, show current location on map
+            showCurrentLocationOnMap()
+        } else {
+            Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentMapsBinding.bind(view)
 
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapFragment?.getMapAsync(callback)
-        fusedLocationProviderClient =
-            LocationServices.getFusedLocationProviderClient(requireContext())
-    }
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
 
-    private val callback = OnMapReadyCallback { googleMap ->
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
+
         binding.imgGps.setOnClickListener {
             featurePermissionRequestLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-            val getLocation = fusedLocationProviderClient.lastLocation.addOnSuccessListener{
-                    location ->
-                if (location != null){
-                    currentLocation = location
-
-                    val latLng = LatLng(currentLocation.latitude,currentLocation.longitude)
-                    var toast = Toast.makeText(requireActivity(),latLng.toString(),Toast.LENGTH_SHORT).show()
-                    val markerOptions = MarkerOptions().position(latLng).title(toast.toString()).draggable(true)
-                    googleMap?.animateCamera(CameraUpdateFactory.newLatLng(latLng))
-                    googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,7f))
-                    googleMap?.addMarker(markerOptions)
-                }
-            }
         }
     }
-    private fun onGotPermissionResultOnFeatures(granted: Boolean) {
-        when (granted) {
-            true -> Toast.makeText(
-                requireActivity(),
-                R.string.location_permission_granted,
-                Toast.LENGTH_SHORT
-            ).show()
 
-            else -> Toast.makeText(
-                requireActivity(),
-                "Permission denied",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
+    override fun onMapReady(googleMap: GoogleMap) {
+        this.googleMap = googleMap
+        googleMap.setOnMarkerClickListener(this)
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
@@ -96,5 +78,30 @@ class MapsFragment : Fragment(R.layout.fragment_maps), GoogleMap.OnMarkerClickLi
             findNavController().navigate(R.id.action_mapsFragment_to_todayFragment, bundle)
         }
         return true
+    }
+
+    private fun showCurrentLocationOnMap() {
+        googleMap?.isMyLocationEnabled = true
+
+        fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                currentLocation = location
+
+                val latLng = LatLng(currentLocation.latitude, currentLocation.longitude)
+                val geocoder = Geocoder(requireContext(), Locale.getDefault())
+                val addresses = geocoder.getFromLocation(
+                    currentLocation.latitude,
+                    currentLocation.longitude,
+                    1
+                )
+
+                val cityName = addresses?.firstOrNull()?.locality ?: "Unknown City"
+                val markerOptions = MarkerOptions().position(latLng).title(cityName)
+                googleMap?.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7f))
+                googleMap?.clear()
+                googleMap?.addMarker(markerOptions)?.tag = cityName
+            }
+        }
     }
 }
