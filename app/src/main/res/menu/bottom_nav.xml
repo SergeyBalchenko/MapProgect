@@ -2,17 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/btn_today"
+        android:id="@+id/todayFragment"
         android:icon="@drawable/ic_today"
         android:enabled="true"
         android:title="Today"/>
     <item
-        android:id="@+id/btn_map"
+        android:id="@+id/mapsFragment"
         android:icon="@drawable/ic_map"
         android:enabled="true"
         android:title="Map"/>
     <item
-        android:id="@+id/btn_week"
+        android:id="@+id/weekFragment"
         android:icon="@drawable/ic_calendar_week"
         android:enabled="true"
         android:title="Week"/>

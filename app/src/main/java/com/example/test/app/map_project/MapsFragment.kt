@@ -96,7 +96,7 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback, Googl
                 )
 
                 val cityName = addresses?.firstOrNull()?.locality ?: "Unknown City"
-                val markerOptions = MarkerOptions().position(latLng).title(cityName)
+                val markerOptions = MarkerOptions().position(latLng).title(cityName).draggable(true)
                 googleMap?.animateCamera(CameraUpdateFactory.newLatLng(latLng))
                 googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7f))
                 googleMap?.clear()
