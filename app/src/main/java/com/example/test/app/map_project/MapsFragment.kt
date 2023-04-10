@@ -40,6 +40,7 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback, Googl
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var currentLocation: Location
     private var googleMap: GoogleMap? = null
+    private var selectedMarker: Marker? = null
 
     private val featurePermissionRequestLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -59,7 +60,8 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback, Googl
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        fusedLocationProviderClient =
+            LocationServices.getFusedLocationProviderClient(requireContext())
 
         binding.imgGps.setOnClickListener {
             featurePermissionRequestLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -69,7 +71,27 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback, Googl
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
         googleMap.setOnMarkerClickListener(this)
+        googleMap.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
+            override fun onMarkerDragStart(marker: Marker) {}
+
+            override fun onMarkerDrag(marker: Marker) {}
+
+            override fun onMarkerDragEnd(marker: Marker) {
+                val latLng = marker.position
+                val geocoder = Geocoder(requireContext(), Locale.getDefault())
+                val addresses = geocoder.getFromLocation(
+                    latLng.latitude,
+                    latLng.longitude,
+                    1
+                )
+
+                val cityName = addresses?.firstOrNull()?.locality ?: "Unknown City"
+                marker.title = cityName
+                marker.showInfoWindow()
+            }
+        })
     }
+
 
     override fun onMarkerClick(marker: Marker): Boolean {
         val cityName = marker.tag as? String
