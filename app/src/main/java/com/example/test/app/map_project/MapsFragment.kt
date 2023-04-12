@@ -1,24 +1,15 @@
 package com.example.test.app.map_project
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
-import android.location.LocationManager
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.util.Log
 import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.test.app.mapprogect.R
 import com.example.test.app.mapprogect.databinding.FragmentMapsBinding
@@ -26,8 +17,6 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener
-import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -71,6 +60,8 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback, Googl
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
+        try {
+
         this.googleMap = googleMap
         googleMap.setOnMarkerClickListener(this)
         googleMap.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
@@ -92,15 +83,27 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback, Googl
                 marker.showInfoWindow()
             }
         })
+        } catch (e: IOException) {
+            Log.e(TAG, "Unable connect to Geocoder")
+        }
     }
 
-
     override fun onMarkerClick(marker: Marker): Boolean {
+        val lat = marker.position.latitude.toString()
+        val lng = marker.position.longitude.toString()
         val cityName = marker.title
-        cityName?.let {
-            val bundle = bundleOf("city_name" to it)
-            findNavController().navigate(R.id.action_mapsFragment_to_todayFragment, bundle)
-        }
+
+        val bundle = bundleOf(
+            Pair("city_name", cityName),
+            Pair("latitude", lat),
+            Pair("longitude", lng)
+        )
+
+        findNavController().navigate(
+            R.id.action_mapsFragment_to_todayFragment,
+            bundle
+        )
+
         return true
     }
 

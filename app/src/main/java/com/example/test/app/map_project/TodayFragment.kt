@@ -15,6 +15,7 @@ import com.example.test.app.map_project.api.view_models.WeatherViewModel
 import com.example.test.app.mapprogect.R
 import com.example.test.app.mapprogect.databinding.FragmentTodayBinding
 import com.google.android.gms.common.api.Status
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
@@ -30,7 +31,9 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
         val repository = Repository()
         val viewModelFactory = WeatherViewModelFactory(repository)
         viewModelWeather = ViewModelProvider(this, viewModelFactory).get(WeatherViewModel::class.java)
-        viewModelWeather.getWeather()
+        val latitude = arguments?.getString("latitude") ?: "Unknown latitude"
+        val longitude = arguments?.getString("longitude") ?: "Unknown longitude"
+        viewModelWeather.getWeather(latitude,longitude)
         viewModelWeather.myResponse.observe(viewLifecycleOwner, Observer { response ->
             binding.tvCity.text = response.location.name.toString()
             binding.tvTemp.text = response.current.temp_c.toString()
@@ -44,10 +47,11 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
             .replace(R.id.autocomplete_fragment, autocompleteFragment)
             .commit()
 
-        val cityName = arguments?.getString("city_name") ?: "Unknown City"
-        binding.tvCityFromMap.text = cityName
 
-        (activity as AppCompatActivity).supportActionBar?.title = cityName
+        val cityName = arguments?.getString("city_name") ?: "Unknown City"
+        binding.tvCityFromMap.text = latitude.toString()
+
+        (activity as AppCompatActivity).supportActionBar?.title = cityName.toString()
 
         // Specify the types of place data to return.
         autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME))
@@ -62,7 +66,6 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
                 // TODO: Get info about the selected place.
                 Log.i(TAG, "Place: ${place.name}, ${place.id}")
             }
-
         })
     }
 }

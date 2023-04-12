@@ -13,6 +13,15 @@
         <action
             android:id="@+id/action_mapsFragment_to_todayFragment"
             app:destination="@id/todayFragment" />
+
+        <argument
+            android:name="latitude"
+            app:argType="string" />
+
+        <argument
+            android:name="longitude"
+            app:argType="string" />
+
         <argument
             android:name="city_name"
             app:argType="string"

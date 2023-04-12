@@ -5,23 +5,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.test.app.map_project.api.repository.Repository
-import com.example.test.app.map_project.model.Current
 import com.example.test.app.map_project.model.WeatherData
 import com.example.test.app.map_project.util.Constants.Companion.API_KEY
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
-import retrofit2.Response
 import java.io.IOException
 const val  TAG = "WeatherViewModel"
 class WeatherViewModel(private val repository: Repository): ViewModel() {
 
     val myResponse: MutableLiveData<WeatherData> = MutableLiveData()
-
-    fun getWeather() {
+    fun getWeather(latitude: String, longitude: String) {
         viewModelScope.launch {
-            val response: WeatherData =
-                repository.getWeather()
-                myResponse.value = response
+            val response: WeatherData = repository.getWeather(API_KEY,latitude,longitude)
+            myResponse.value = response
             try {
             } catch (e: IOException) {
                 Log.e(TAG,"IOEXEPTION you might not have internet connection")

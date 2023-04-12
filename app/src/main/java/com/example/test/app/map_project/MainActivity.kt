@@ -28,19 +28,6 @@ class MainActivity : AppCompatActivity() {
                 viewModel.isLoading.value
             }
         }
-//        val repository = Repository()
-//        val viewModelFactory = WeatherViewModelFactory(repository)
-//        viewModelWeather = ViewModelProvider(this, viewModelFactory).get(WeatherViewModel::class.java)
-//        viewModelWeather.getWeather()
-//        viewModelWeather.myResponse.observe(this, Observer { response ->
-//            Log.d("Response", response.condition.toString())
-//            Log.d("Response", response.gust_kph.toString())
-//            Log.d("Response", response.is_day.toString())
-//            Log.d("Response", response.last_updated.toString())
-//            Log.d("Response", response.last_updated_epoch.toString())
-//            Log.d("Response", response.temp_c.toString())
-//            Log.d("Response", response.uv.toString())
-//        })
         Places.initialize(applicationContext,API_KEY_GOOGLE_SERVICES)
         setContentView(R.layout.activity_main)
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_nav)
