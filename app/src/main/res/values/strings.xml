@@ -8,4 +8,9 @@
     <string name="permissions_denied_forever">permission denied forever</string>
     <string name="location_permission_granted">permission granted</string>
     <string name="button">button</string>
+    <string name="name_city">Name City</string>
+    <string name="city_name">City name</string>
+    <string name="temperature">Temperature</string>
+    <string name="ufo">UFO</string>
+    <string name="wind_force">Wind force</string>
 </resources>

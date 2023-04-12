@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -32,7 +33,9 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import java.io.IOException
 import java.util.Locale
+
 
 class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
@@ -40,7 +43,6 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback, Googl
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var currentLocation: Location
     private var googleMap: GoogleMap? = null
-    private var selectedMarker: Marker? = null
 
     private val featurePermissionRequestLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -94,7 +96,7 @@ class MapsFragment : Fragment(R.layout.fragment_maps), OnMapReadyCallback, Googl
 
 
     override fun onMarkerClick(marker: Marker): Boolean {
-        val cityName = marker.tag as? String
+        val cityName = marker.title
         cityName?.let {
             val bundle = bundleOf("city_name" to it)
             findNavController().navigate(R.id.action_mapsFragment_to_todayFragment, bundle)
