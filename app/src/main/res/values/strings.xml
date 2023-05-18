@@ -13,4 +13,5 @@
     <string name="temperature">Temperature</string>
     <string name="ufo">UFO</string>
     <string name="wind_force">Wind force</string>
+    <string name="avghumidity">avghumidity:</string>
 </resources>

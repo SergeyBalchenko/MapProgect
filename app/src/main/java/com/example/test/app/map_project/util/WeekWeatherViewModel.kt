@@ -1,4 +1,4 @@
-package com.example.test.app.map_project.api.view_models
+package com.example.test.app.map_project.util
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -6,14 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.test.app.map_project.api.repository.Repository
 import com.example.test.app.map_project.model.WeatherData
-import com.example.test.app.map_project.util.Constants.Companion.API_KEY
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
-const val TAG = "WeatherViewModel"
-
-class WeatherViewModel(private val repository: Repository) : ViewModel() {
+class WeekWeatherViewModel(private val repository: Repository) : ViewModel() {
 
     val myForecastResponse: MutableLiveData<WeatherData> = MutableLiveData()
 
@@ -22,7 +17,7 @@ class WeatherViewModel(private val repository: Repository) : ViewModel() {
 
     fun getWeather(latitude: String, longitude: String) {
         viewModelScope.launch {
-            repository.getWeather(API_KEY, latitude, longitude)
+            repository.getWeather(Constants.API_KEY, latitude, longitude)
                 .fold(
                     onSuccess = {
                         myForecastResponse.postValue(it)

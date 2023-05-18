@@ -31,7 +31,23 @@
         android:id="@+id/todayFragment"
         android:name="com.example.test.app.map_project.TodayFragment"
         android:label="fragment_today"
-        tools:layout="@layout/fragment_today" />
+        tools:layout="@layout/fragment_today" >
+        <action
+            android:id="@+id/action_todayFragment_to_weekFragment"
+            app:destination="@id/weekFragment" />
+        <argument
+            android:name="latitude"
+            app:argType="string" />
+
+        <argument
+            android:name="longitude"
+            app:argType="string" />
+
+        <argument
+            android:name="city_name"
+            app:argType="string"
+            android:defaultValue="Odessa" />
+    </fragment>
     <fragment
         android:id="@+id/weekFragment"
         android:name="com.example.test.app.map_project.WeekFragment"
